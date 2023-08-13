@@ -9,6 +9,10 @@ class FileSystemNode {
 public:
     FileSystemNode(const string& name, bool isDirectory) : name(name), isDirectory(isDirectory) {}
 
+    const string& getName() const {
+        return name;
+    }
+
     void addChild(FileSystemNode* child) {
         children.push_back(child);
     }
@@ -18,6 +22,10 @@ public:
         for (FileSystemNode* child : children) {
             child->display(depth + 1);
         }
+    }
+
+    const vector<FileSystemNode*>& getChildren() const {
+        return children;
     }
 
 private:
@@ -31,6 +39,11 @@ public:
     FileSystem() {
         root = new FileSystemNode("Root", true);
         currentDirectory = root;
+        directoryMap["Root"] = root;
+    }
+
+    ~FileSystem() {
+        deleteFileSystem(root);
     }
 
     void createDirectory(const string& name) {
@@ -58,6 +71,13 @@ public:
     }
 
 private:
+    void deleteFileSystem(FileSystemNode* node) {
+        for (FileSystemNode* child : node->getChildren()) {
+            deleteFileSystem(child);
+        }
+        delete node;
+    }
+
     FileSystemNode* root;
     FileSystemNode* currentDirectory;
     unordered_map<string, FileSystemNode*> directoryMap;
@@ -66,24 +86,42 @@ private:
 int main() {
     FileSystem fileSystem;
 
-    fileSystem.createDirectory("Documents");
-    fileSystem.createFile("Resume.pdf");
-    fileSystem.changeDirectory("Documents");
-    fileSystem.createDirectory("Reports");
-    fileSystem.changeDirectory("Reports");
-    fileSystem.createFile("AnnualReport.pdf");
+    while (true) {
+        cout << "1. Create Directory\n";
+        cout << "2. Create File\n";
+        cout << "3. Change Directory\n";
+        cout << "4. Display Current Directory\n";
+        cout << "5. Exit\n";
+        int choice;
+        cout << "Enter your choice: ";
+        cin >> choice;
 
-    fileSystem.changeDirectory("Root");
-    fileSystem.createDirectory("Pictures");
-    fileSystem.changeDirectory("Pictures");
-    fileSystem.createDirectory("Vacation");
-    fileSystem.changeDirectory("Vacation");
-    fileSystem.createFile("Beach.jpg");
-    fileSystem.createFile("Mountains.jpg");
-
-    fileSystem.displayCurrentDirectory();
-
-    // Clean up memory (not shown in detail)
+        string name;
+        switch (choice) {
+            case 1:
+                cout << "Enter directory name: ";
+                cin >> name;
+                fileSystem.createDirectory(name);
+                break;
+            case 2:
+                cout << "Enter file name: ";
+                cin >> name;
+                fileSystem.createFile(name);
+                break;
+            case 3:
+                cout << "Enter directory name: ";
+                cin >> name;
+                fileSystem.changeDirectory(name);
+                break;
+            case 4:
+                fileSystem.displayCurrentDirectory();
+                break;
+            case 5:
+                return 0;
+            default:
+                cout << "Invalid choice\n";
+        }
+    }
 
     return 0;
 }
