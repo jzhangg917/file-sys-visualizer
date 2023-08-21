@@ -19,6 +19,8 @@ public:
 
     const vector<FileSystemNode*>& getChildren() const;
 
+    bool isDirectoryNode() const;
+
 private:
     string name;
     bool isDirectory;
@@ -38,6 +40,11 @@ public:
     void changeDirectory(const string& name);
 
     void displayCurrentDirectory();
+
+    void copyFile(const string& sourceName, const string& destinationName);
+    void moveFile(const string& sourceName, const string& destinationName);
+    void deleteNode(const string& name);
+    vector<FileSystemNode*> search(const string& name);
 
 private:
     void deleteFileSystem(FileSystemNode* node);
