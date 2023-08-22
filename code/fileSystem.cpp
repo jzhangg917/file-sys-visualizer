@@ -30,6 +30,11 @@ bool FileSystemNode::isDirectoryNode() const {
     return isDirectory;
 }
 
+// Define a method to set the last modified time
+void FileSystemNode::setLastModifiedTime(time_t lastModified) {
+    lastModifiedTime = lastModified;
+}
+
 // FileSystem methods
 FileSystem::FileSystem() {
     root = new FileSystemNode("Root", true);
@@ -121,4 +126,24 @@ void FileSystem::deleteFileSystem(FileSystemNode* node) {
         deleteFileSystem(child);
     }
     delete node;
+}
+
+// Define a method to get the current directory name
+string FileSystem::getCurrentDirectoryName() const {
+    return currentDirectory->getName();
+}
+
+// Define the setFileMetadata method to set file metadata
+void FileSystem::setFileMetadata(const string& name, time_t creationTime, time_t lastModifiedTime) {
+    if (directoryMap.find(name) != directoryMap.end()) {
+        FileSystemNode* node = directoryMap[name];
+        node->setLastModifiedTime(lastModifiedTime);
+    } else {
+        cout << "File not found: " << name << endl;
+    }
+}
+
+// Define the updateFileMetadata method to update file metadata (last modified time)
+void FileSystem::updateFileMetadata(const string& name, time_t lastModifiedTime) {
+    setFileMetadata(name, time_t(0), lastModifiedTime);
 }
